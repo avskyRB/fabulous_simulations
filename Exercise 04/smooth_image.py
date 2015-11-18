@@ -22,6 +22,7 @@ result, err =quad(integral,0,h)
 k=1/result
 
 
+
 #Reads a square image in 8-bit/color PPM format from the given file. Note: No checks on valid format are done.
 def readImage(filename):
     f = file(filename,"rb")
@@ -64,8 +65,8 @@ kernel_real = np.zeros((pixel,pixel),dtype=np.complex)
 
 hsml = 10.
 
-start = [pixel-70,pixel-40]
-#start = [0,0]
+#start = [pixel-70,pixel-40]
+start = [0,0]
 counter =0
 #now set the values of the kernel 
 for i in np.arange(pixel):
