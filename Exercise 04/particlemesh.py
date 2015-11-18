@@ -76,11 +76,25 @@ potential = np.real(np.fft.ifft2(potential_kspace))
 
 a = np.zeros((ngrid,ngrid,2))
 
-for i in xrange(ngrid-1):
-	for j in xrange(ngrid-1):
+for i in xrange(ngrid):
+	for j in xrange(ngrid):
 			print i,j
-			a[i][j][0] = -(potential[i+1][j] - potential[i-1][j])/2*h
-			a[i][j][1] = -(potential[i][j+1] - potential[i][j-1])/2*h
+			if i != ngrid-1 and j != ngrid-1:
+				a[i][j][0] = -(potential[i+1][j] - potential[i-1][j])/2*h
+				a[i][j][1] = -(potential[i][j+1] - potential[i][j-1])/2*h
+			if i== ngrid-1 and j != ngrid-1:
+				a[i][j][0] = potential[i-1][j]/2*h
+				a[i][j][1] = -(potential[i][j+1] - potential[i][j-1])/2*h
+
+			if j==ngrid-1 and i != ngrid-1:
+				a[i][j][0] = -(potential[i+1][j] - potential[i-1][j])/2*h
+				a[i][j][1] = potential[i][j-1]/2*h
+
+			if i== ngrid-1 and j == ngrid-1:
+				a[i][j][0] = potential[i-1][j]/2*h
+				a[i][j][1] = potential[i][j-1]/2*h
+
+
 
 print potential
 print a
