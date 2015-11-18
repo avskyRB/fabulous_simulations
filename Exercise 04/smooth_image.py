@@ -1,5 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import quad
+
+
+h=10
+def w(x):
+    if x/h<1/2 and x/h>=0:
+        l=1.0-6.0*np.power(x/h,2)+6.0*np.power(x/h,3)
+    elif x/h>=1/2 and x/h<1:
+        l=2.0*np.power((1-(x/h)),3)
+    else:
+        l=0
+    return l 
+
+# Normalize function
+
+def integral(x):
+    return w(x)*2*np.pi*x
+result, err =quad(integral,0,h)
+
+k=1/result
+
 
 #Reads a square image in 8-bit/color PPM format from the given file. Note: No checks on valid format are done.
 def readImage(filename):
@@ -16,6 +37,7 @@ def readImage(filename):
     f.close()
     
     return img, pixel
+    
 
 #Writes a square image in 8-bit/color PPM format.
 def writeImage(filename, image):
@@ -31,16 +53,7 @@ def writeImage(filename, image):
     f.close()
     
     
-def w(x,y):
-    h=500
-    r=np.sqrt(x*x + y*y)
-    if r/h>=0 and r/h<0.5:
-        l=1-6*np.power((r/h),2)+6*np.power((r/h),3)
-    elif r/h>=0.5 and r/h<1:
-        l=2*np.power((1-r/h),3)
-    else:
-        l=0
-    return l*4*h/(3*np.pi)
+    
     
 
 img, pixel = readImage("aq-original.ppm")
@@ -51,14 +64,20 @@ kernel_real = np.zeros((pixel,pixel),dtype=np.complex)
 
 hsml = 10.
 
+start = [pixel-70,pixel-40]
+#start = [0,0]
+counter =0
 #now set the values of the kernel 
 for i in np.arange(pixel):
     for j in np.arange(pixel):
         
         #TODO: do something sensible here to set the real part of the kernel
-        kernel_real[i, j] = w(i,j)
-        
-
+        r= np.sqrt(np.power(i-start[0],2)+np.power(j-start[0],2))
+        kernel_real[i, j] = k*w(r) 
+        if kernel_real[i, j]!=0:
+            print kernel_real[i, j]
+            counter = counter +1
+#print counter
 
 #Let's calculate the Fourier transform of the kernel
 kernel_kspace = np.fft.fft2(kernel_real)
@@ -79,8 +98,8 @@ for colindex in np.arange(3):
     
     #multiply with kernel in Fourier space
     #TODO: fill in code here
-    color_kspace*=kernel_kspace
-    
+    #color_kspace = np.real(color_kspace * kernel_kspace) #take only real part
+    color_kspace = np.multiply(color_kspace,kernel_kspace)
     #backward transform
     color_real = np.fft.ifft2(color_kspace)
     
