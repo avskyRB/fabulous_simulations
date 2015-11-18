@@ -1,10 +1,9 @@
 import numpy as np
-
 import random
 
 L = 1.0 # Length of the box
 m = 1.0 # Mass of the particle
-ngrid = 6 # Number of grids
+ngrid = 256 # Number of grids
 h = L/ngrid
 # Random position
 
@@ -32,28 +31,33 @@ for i in xrange(ngrid):
 			q = j
 			qa = qf - q
 			wp[i][j] = (1-pa)*(1-qa)
-			rho[i][j] =(1/h*h*h)*(m*wp[i][j])
+			rho[i][j] =(1/h*h)*(m*wp[i][j])
 			if i != ngrid-1:
 				wp[i+1][j] = pa * (1-qa)
-				rho[i+1][j] =(1/h*h*h)*(m*wp[i+1][j])
+				rho[i+1][j] =(1/h*h)*(m*wp[i+1][j])
 			if i == ngrid-1:
 				wp[0][j] = pa * (1-qa)
-				rho[0][j] =(1/h*h*h)*(m*wp[0][j])
+				rho[0][j] =(1/h*h)*(m*wp[0][j])
 			if j != ngrid-1:
 				wp[i][j+1] = (1-pa)*qa
-				rho[i][j+1] =(1/h*h*h)*(m*wp[i][j+1])
+				rho[i][j+1] =(1/h*h)*(m*wp[i][j+1])
 			if j == ngrid-1:
 				wp[i][0] = (1-pa)*qa
-				rho[i][0] =(1/h*h*h)*(m*wp[i][0])
+				rho[i][0] =(1/h*h)*(m*wp[i][0])
 			if i != ngrid-1 and j!= ngrid-1:
 				wp [i+1][j+1] = pa*qa
-				rho[i+1][j+1] =(1/h*h*h)*(m*wp[i+1][j+1])
+				rho[i+1][j+1] =(1/h*h)*(m*wp[i+1][j+1])
 			if i == ngrid-1 and j == ngrid-1:
 				wp[0][0] = pa*qa 
-				rho[0][0] =(1/h*h*h)*(m*wp[0][0])
+				rho[0][0] =(1/h*h)*(m*wp[0][0])
 
 			
 
 
-print wp
+#print wp
 print rho
+
+rho_kspace=np.fft.fft2(rho)
+
+green=np.zeros((ngrid,ngrid))
+
