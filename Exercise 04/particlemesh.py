@@ -7,8 +7,8 @@ ngrid = 5 # Number of grids
 h = L/ngrid
 # Random position
 
-pos = (0.5,0.5)
-#pos = (random.uniform(0, L), random.uniform(0, L))
+#pos = (0.5,0.5)
+pos = (random.uniform(0, L), random.uniform(0, L))
 
 # DENSITY FIELD
 
@@ -54,7 +54,6 @@ for i in xrange(ngrid):
 			
 
 
-
 rho_kspace=np.fft.fft2(rho)
 
 g = np.zeros((ngrid,ngrid))
@@ -78,7 +77,6 @@ a = np.zeros((ngrid,ngrid,2))
 
 for i in xrange(ngrid):
 	for j in xrange(ngrid):
-			print i,j
 			if i != ngrid-1 and j != ngrid-1:
 				a[i][j][0] = -(potential[i+1][j] - potential[i-1][j])/2*h
 				a[i][j][1] = -(potential[i][j+1] - potential[i][j-1])/2*h
@@ -95,6 +93,14 @@ for i in xrange(ngrid):
 				a[i][j][1] = potential[i][j-1]/2*h
 
 
+F = np.zeros((ngrid,ngrid,2))
 
-print potential
-print a
+for i in xrange(ngrid):
+	for j in xrange(ngrid):
+		F[i][j][0] = m*a[i][j][0]*wp[i][j]
+		F[i][j][1] = m*a[i][j][1]*wp[i][j]
+
+print wp
+print F
+
+
