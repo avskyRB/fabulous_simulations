@@ -73,7 +73,7 @@ potential = np.real(np.fft.ifft2(potential_kspace))
 
 # OBTAINING THE FORCE
 
-a = np.zeros((ngrid,ngrid,2))
+a = np.zeros((ngrid,ngrid,2)) # Aceleration field (matrix NxNx2)
 
 for i in xrange(ngrid):
 	for j in xrange(ngrid):
@@ -93,6 +93,8 @@ for i in xrange(ngrid):
 				a[i][j][1] = potential[i][j-1]/2*h
 
 
+
+#CIC interpolation of the force
 F = np.zeros((ngrid,ngrid,2))
 
 for i in xrange(ngrid):
@@ -100,7 +102,24 @@ for i in xrange(ngrid):
 		F[i][j][0] = m*a[i][j][0]*wp[i][j]
 		F[i][j][1] = m*a[i][j][1]*wp[i][j]
 
-print wp
-print F
 
+# distances distributed around:
+r_min = 0.3*L/ngrid
+r_max=L/2
+p =random.uniform(0, 1)
+q = random.uniform(0, 1)
+delta_x = r_min*np.power((r_max/r_min),p)*np.cos(2*np.pi*q)
+delta_y = r_min*np.power((r_max/r_min),p)*np.cos(2*np.pi*q)
+pos_q = np.array((pos[0]+delta_x, pos[1]+delta_y))
+
+# Boundary conditions
+
+if pos_q[0]>L:
+	pos_q[0] = pos_q[0] - L
+if pos_q[0]<0:
+	pos_q[0] = pos_q[0] + L
+if pos_q[1]>L:
+	pos_q[1] = pos_q[1] - L
+if pos_q[1]<0:
+	pos_q[1] = pos_q[1] + L
 
