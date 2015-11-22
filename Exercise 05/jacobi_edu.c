@@ -47,6 +47,7 @@ void jacobi_step(double *x, double *b, int N)
   for(i = 0; i < N; i++)
     for(j = 0; j < N; j++)
       x[i * N + j] = xnew[i * N + j];
+      //printf("%f\t",x[i * N + j]);
 
   free(xnew);
 }
@@ -66,8 +67,10 @@ void calc_residuum(double *x, double *b, int N, double *res)
       A[i][i]=-2;
       if(i==0)
           A[i][N]=A[i][i+1]=1;
-      if(i==N)
+      else if(i==N)
           A[i][i-1]=A[i][0]=1;
+      else
+          A[i][i-1]=A[i][i+1]=1;
   }
  
     for (i=0;i<N;i++) //product Ax
@@ -79,6 +82,14 @@ void calc_residuum(double *x, double *b, int N, double *res)
         B[i][j]=sum;
         sum=0;
       }
+    
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<N;j++)
+            printf("%f\t",A[i][j]);
+        printf("\n");
+    }
+    
     
 
   for(i = 0; i < N; i++)
@@ -176,7 +187,7 @@ int main(int argc, char **argv)
 
       double r = norm_of_residual(res, N);
 
-      printf("iter=%d:  residual=%g\n", i, r);
+     // printf("iter=%d:  residual=%g\n", i, r);
       fprintf(fd, "%g\n", r);
     }
 
