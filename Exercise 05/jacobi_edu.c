@@ -23,22 +23,27 @@ void jacobi_step(double *x, double *b, int N)
    *
    */
   
-  if(j>0 && j<N) 
-  {
-      if(i==0)
-          xnew[i*N+j]=1/4 * (x[N*N+j]+x[i+1*N+j]+x[i*N+j+1]+x[i-1*N+j-1]-b[i*N+j]);
-      else if(i==N)
-          xnew[i*N+j]=1/4 * (x[i-1*N+j]+x[1*N+j]+x[i*N+j+1]+x[i-1*N+j-1]-b[i*N+j]);
-  }
-  
-  if(i>0 && i<N)
-  {
-      if(j==0)
-          xnew[i*N+j]=1/4 * (x[N*N+j]+x[i+1*N+j]+x[i*N+j+1]+x[i-1*N+N]-b[i*N+j]);
-      else if(j==N)
-          xnew[i*N+j]=1/4 * (x[i-1*N+j]+x[1*N+j]+x[i*N+1]+x[i-1*N+j-1]-b[i*N+j]);
-  }
+  for(i=0;i<N;i++)
+    for(j=0;j<N;j++)
+    {
+        
+        if(i>0 && i<N && j>0 && j<N)
+            xnew[i*N+j]=1/4 * (x[(i-1)*N+j]+x[(i+1)*N+j]+x[i*N+(j+1)]+x[i*N+(j-1)]-b[i*N+j]);
+        
+        
+        if(i==0 && j==0)
+            xnew[i*N+j]=1/4 * (x[N*N+j]+x[(i+1)*N+j]+x[i*N+N]+x[i*N+(j+1)]-b[i*N+j]);
+        else if(i==0 && j==N)
+            xnew[i*N+j]=1/4 * (x[N*N+j]+x[(i+1)*N+j]+x[i*N+(j-1)]+x[i*N+0]-b[i*N+j]);
+        
+        if(i==N && j==0)
+            xnew[i*N+j]=1/4 * (x[(i-1)*N+j]+x[0*N+j]+x[i*N+N]+x[i*N+(j+1)]-b[i*N+j]);
+        else if(i==N && j==N)
+            xnew[i*N+j]=1/4 * (x[(i-1)*N+j]+x[0*N+j]+x[i*N+(j-1)]+x[i*N+N]-b[i*N+j]);
+        
+    }
 
+    
   for(i = 0; i < N; i++)
     for(j = 0; j < N; j++)
       x[i * N + j] = xnew[i * N + j];
@@ -56,7 +61,7 @@ void calc_residuum(double *x, double *b, int N, double *res)
   
   double A[N][N],B[N][N];
   
-  for(i=0;i<N;i++)
+  for(i=0;i<N;i++) //calculate A
   {
       A[i][i]=-2;
       if(i==0)
@@ -65,7 +70,7 @@ void calc_residuum(double *x, double *b, int N, double *res)
           A[i][i-1]=A[i][0]=1;
   }
  
-    for (i=0;i<N;i++)
+    for (i=0;i<N;i++) //product Ax
       for (j=0;j<N;j++)
       {
         for (k=0;k>N;k++)
