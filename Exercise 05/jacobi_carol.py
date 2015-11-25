@@ -21,16 +21,14 @@ def jacobi_step(x, b, N):
 # This function calculates the resdiuum vector res = b - Ax, for input vectors
 # of length N. The output is stored in res.
 
-'''
+
 def gaus_siedel(x,b,N):
 	xnew = np.zeros((N,N))
     for i in xrange(N):
-    	for j in xrange(N):
-    		xnew[i-1,j] = 0.25 *(get_value(xnew,i-2,j)+get_value(xnew,i,j)+get_value(xnew,i-1,j-1)+get_value(xnew,i-1,j+1)-b[i-1,j])
-    		xnew[i,j-1] = 0.25 *(get_value(xnew,i-1,j-1)+get_value(xnew,i+1,j-1)+get_value(xnew,i,j-2)+get_value(xnew,i,j)-b[i,j-1])
-    		xnew[i,j] =	 0.25 *(get_value(xnew,i-1,j)+get_value(xnew,i+1,j)+get_value(xnew,i,j-1)+get_value(xnew,i,j+1)-b[i,j])
+    	for j in xrange(N):		
+    		xnew[i,j] =	 0.25 *(get_value(xnew,i-1,j)+get_value(x,i+1,j)+get_value(xnew,i,j-1)+get_value(x,i,j+1)-b[i,j])
     x[:,:] = xnew
-'''
+
 
 
 def calc_residuum(x, b, N, res):
@@ -78,7 +76,8 @@ f.write("%d\n"%steps)
 
 for i in np.arange(steps):
 
-	jacobi_step(phi, b, N)
+	#jacobi_step(phi, b, N)
+	gaus_siedel(phi, b, N)
 	calc_residuum(phi, b, N, res)
 	r = norm_of_residual(res, N)
 	#print phi[0][0]
