@@ -24,13 +24,21 @@ def jacobi_step(x, b, N):
 
 def gaus_siedel(x,b,N):
 	xnew = np.zeros((N,N))
-    for i in xrange(N):
-    	for j in xrange(N):		
-    		xnew[i,j] =	 0.25 *(get_value(xnew,i-1,j)+get_value(x,i+1,j)+get_value(xnew,i,j-1)+get_value(x,i,j+1)-b[i,j])
-    x[:,:] = xnew
+	for i in xrange(N):
+		for j in xrange(N):		
+			xnew[i,j] =	 0.25 *(get_value(xnew,i-1,j)+get_value(x,i+1,j)+get_value(xnew,i,j-1)+get_value(x,i,j+1)-b[i,j])
+	x[:,:] = xnew
 
-
-
+'''
+def redblack(x,b,N):
+	xnew = np.zeros((N,N))
+	for i in xrange(N):
+		for j in xrange(N):
+			xnew[2*i,2*j] = gaus_siedel(x,b,N)
+	for i in xrange(N):
+		for j in xrange(N):
+			xnew[2*i+1,2*j+1] = gaus_siedel(x,b,N)
+'''
 def calc_residuum(x, b, N, res):
     #TODO: fill in your code
     #res[i,j] = ...
@@ -78,6 +86,7 @@ for i in np.arange(steps):
 
 	#jacobi_step(phi, b, N)
 	gaus_siedel(phi, b, N)
+	print phi[0][0]
 	calc_residuum(phi, b, N, res)
 	r = norm_of_residual(res, N)
 	#print phi[0][0]
