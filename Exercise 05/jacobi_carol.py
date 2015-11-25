@@ -15,7 +15,7 @@ def jacobi_step(x, b, N):
     #TODO: fill in your code
     for i in xrange(N):
     	for j in xrange(N):
-    		xnew[i,j] =	 0.25 *(get_value(xnew,i-1,j)+get_value(xnew,i+1,j)+get_value(xnew,i,j-1)+get_value(xnew,i,j+1)-b[i,j])
+    		xnew[i,j] =	 0.25 *(get_value(x,i-1,j)+get_value(x,i+1,j)+get_value(x,i,j-1)+get_value(x,i,j+1)-b[i,j])
     x[:,:] = xnew
 
 # This function calculates the resdiuum vector res = b - Ax, for input vectors
@@ -38,11 +38,11 @@ def calc_residuum(x, b, N, res):
     #res[i,j] = ...
     for i in xrange(N):
     	for j in xrange(N):
-    		res[i,j] = b[i,j]+(get_value(x,i-1,j)+get_value(x,i+1,j)+get_value(x,i,j-1)+get_value(x,i,j+1)+4.0*get_value(x,i,j))/h*h
+    		res[i,j] = b[i,j]-(get_value(x,i-1,j)+get_value(x,i+1,j)+get_value(x,i,j-1)+get_value(x,i,j+1)-4.0*get_value(x,i,j))
     
     
 # This function calculates the norm of the vector of length N, 
-# defined as the usual quadratic vector norm.   
+# defined as the usual quadratic 	vector norm.   
 def norm_of_residual(res, N):
     sum = np.sum(res**2)
     return np.sqrt(sum)
@@ -81,7 +81,7 @@ for i in np.arange(steps):
 	jacobi_step(phi, b, N)
 	calc_residuum(phi, b, N, res)
 	r = norm_of_residual(res, N)
-
+	#print phi[0][0]
 	print("iter=%d:  residual=%g\n"%(i, r))
 	f.write("%g\n"%r)
 	residuals[i] = r
