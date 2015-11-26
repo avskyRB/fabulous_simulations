@@ -21,7 +21,7 @@ void jacobi_step(double *x, double *b, int N)
     for(j=0;j<N;j++)
     {
         
-        if(i>0 && i<N && j>0 && j<N)
+        if(i>0 && i<N-1 && j>0 && j<N-1)
             xnew[i*N + j] = 0.25 * (x[(i-1)*N + j] + x[(i+1)*N + j] + x[i*N + (j+1)] + x[i*N + (j-1)] - b[i*N + j]);
                 
         if(i==0 && j==0)
@@ -81,6 +81,27 @@ void gauss_siedel(double *x, double *b, int N)
 
     free(xnew);
 }
+
+void redblack(double *x, double *b, int N)
+{
+    int i,j;
+    double *xnew = malloc(N * N * sizeof(double));
+
+    for(i=0;i<N;i++)
+        for(j=0;j<N;j++)
+            xnew[2*i*N + 2*j] = 0.25 * (xnew[(i-1)*N + j] + x[(i+1)*N + j] + x[i*N + (j+1)] + xnew[i*N + (j-1)] - b[i*N + j]);
+    
+    for(i=0;i<N;i++)
+        for(j=0;j<N;j++)
+            xnew[(2*i+1)*N + 2*j+1] =  0.25 * (xnew[(i-1)*N + j] + x[(i+1)*N + j] + x[i*N + (j+1)] + xnew[i*N + (j-1)] - b[i*N + j]);;
+    
+    for(i = 0; i < N; i++)
+        for(j = 0; j < N; j++)
+        x[i * N + j] = xnew[i * N + j];
+
+    free(xnew);
+}
+
 
 /* This function calculates the resdiuum vector res = b - Ax, for input vectors
  * of length N. The output is stored in res.
@@ -182,7 +203,7 @@ int main(int argc, char **argv)
 
   /* open a file for outputting the residuum values, and then do 2000 Jacobi steps */
 
-  FILE *fd = fopen("res_gaussiedel", "w");
+  FILE *fd = fopen("res_redblack", "w");
 
   //fprintf(fd, "%d\n", steps);
 
@@ -190,8 +211,8 @@ int main(int argc, char **argv)
     {
       printf("%f\n", phi[0*N + 0]);
       //jacobi_step(phi, b, N);
-      gauss_siedel(phi,b,N);
-      
+      //gauss_siedel(phi,b,N);
+      redblack(phi,b,N);
       //printf("%f\n", b[0]);
       calc_residuum(phi, b, N, res);
 
