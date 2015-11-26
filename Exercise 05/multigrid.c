@@ -137,14 +137,34 @@ void do_restrict(int N, double *fine, int NN, double *coarse)
  */
 void do_prolong(int NN, double *coarse, int N, double *fine)
 {
-  /*
-   *   FILL IN HERE
-   *
-   *
-   *   fine[i * N + j] += 
-   *
-   *
-   */
+
+    int i, j;
+
+    for(i = 0; i < NN; i++)
+      for(j = 0; j < NN; j++)
+        fine[i*N+j]=0;
+
+    for(i = 0; i < NN; i++)
+      for(j = 0; j < NN; j++)
+      {
+          fine[2*i * N + 2*j] = coarse [i*NN, j];
+          if(i<NN && j<NN)
+            fine[2*(i+1)*N+ 2*(j+1)] += 1/4*coarse [(i+1)*NN+j+1];
+          if(i<NN)
+            fine[2*(i+1)*N + 2*j] += 1/2*coarse[(i+1)*NN+j] ;
+          if(j>0 && i<NN)
+            fine[2*(i+1)*N + 2*(j-1)] += 1/4*coarse[(i+1)*NN+(j-1)];
+          if(j<NN)
+            fine[2*i*N + 2*(j+1)] += 1/2*coarse[i*NN+j+1] ;
+          if(i>0 && j>0)
+            fine[2*(i-1)*N + 2*(j-1)] = 1/4*coarse[(i-1)*NN+(j-1)]; 
+          if(i>0)
+            fine[2*(i-1)*N + 2*j] = 1/2*coarse[(i-1)*NN+j];
+          if(i>0 && j>0)
+            fine[2*(i-1)*N + 2*(j+1)] = 1/4*coarse[(i-1)*NN+(j+1)] ;
+          if(i>0 && j>0)
+            fine[2*(i-1)*N + 2*(j-1)] = 1/2*coarse[(i-1)*NN+(j-1)];
+      }
 }
 
 
@@ -217,8 +237,10 @@ int main(int argc, char **argv)
   double eta = 0.1 * L;
   double rho0 = 10.0;
   double *test = malloc(NN * NN * sizeof(double));
-
-
+  double *coarsetest = malloc(N * N * sizeof(double));
+  for(i = 0; i < NN; i++)
+    for(j = 0; j < NN; j++)
+        test[i*NN+j] = 1;
   /* allocate some storage for our fields */
   double *phi = malloc(N * N * sizeof(double));
   double *rho = malloc(N * N * sizeof(double));
@@ -256,7 +278,7 @@ int main(int argc, char **argv)
 
   /* open a file for outputting the residuum values, and then do 2000 Jacobi steps */
 
-  
+  /*
   FILE *fd = fopen("res_multigrid.txt", "w");
 
   fprintf(fd, "%d\n", steps);
@@ -275,6 +297,12 @@ int main(int argc, char **argv)
     }
 
   fclose(fd);
+  */
+
+  do_restrict(N,coarsetest,NN,test);
+  for(i = 0; i < N; i++)
+    for(j = 0; j < N; j++)  
+      printf("%f\n", coarsetest[i*N+j]);
 
 }
 
