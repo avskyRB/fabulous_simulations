@@ -120,17 +120,23 @@ void do_restrict(int N, double *fine, int NN, double *coarse)
       for(j = 0; j < N; j+=2)
       {
           if(i>0 && i<N-1 && j>0 && j<N-1)
-            coarse[i/2 * NN + j/2] =  1/16*fine[(i-1)* N + (j-1)]+ 1/8*fine[i*N + (j-1)] + 1/16*fine[(i+1)*N + (j-1)] + 1/8*fine[(i-1)*N + j] + 1/4*fine[i*N + j] + 1/8*fine[(i+1)*N +j] + 1/16*fine[(i-1)*N + j+1] + 1/8*fine[i*N + j+1] + 1/16*fine[(i+1)*N + j+1];
+            coarse[i/2 * NN + j/2] =  0.0625*fine[(i-1)* N + (j-1)]+ 0.125*fine[i*N + (j-1)] + 0.0625*fine[(i+1)*N + (j-1)] + 0.125*fine[(i-1)*N + j] + 0.25*fine[i*N + j] + 0.125*fine[(i+1)*N +j] + 0.0625*fine[(i-1)*N + j+1] + 0.125*fine[i*N + j+1] + 0.0625*fine[(i+1)*N + j+1];
           if(i==0 && j==0)
-            coarse[i/2 * NN + j/2] = 1/16*fine[(i+1)*N + (j+1)] +  1/4*fine[i*N + j] + 1/8*fine[(i+1)*N +j] + 1/8*fine[i*N + j+1];
+            coarse[i/2 * NN + j/2] = 0.0625*fine[(i+1)*N + (j+1)] +  0.25*fine[i*N + j] + 0.125*fine[(i+1)*N +j] + 0.125*fine[i*N + j+1];
           else if(i==0 && j==N-1)
-            coarse[i/2 * NN + j/2] =  1/8*fine[i*N + (j-1)] + 1/16*fine[(i+1)*N + (j-1)] + 1/4*fine[i*N + j] + 1/8*fine[(i+1)*N +j];
+            coarse[i/2 * NN + j/2] =  0.125*fine[i*N + (j-1)] + 0.0625*fine[(i+1)*N + (j-1)] + 0.25*fine[i*N + j] + 0.125*fine[(i+1)*N +j];
           if(i==N-1 && j==0)
-            coarse[i/2 * NN + j/2] =  1/8*fine[(i-1)*N + j] + 1/4*fine[i*N + j]+ 1/16*fine[(i-1)*N + j+1] + 1/8*fine[i*N + j+1];
+            coarse[i/2 * NN + j/2] =  0.125*fine[(i-1)*N + j] + 0.25*fine[i*N + j]+ 0.0625*fine[(i-1)*N + j+1] + 0.125*fine[i*N + j+1];
           else if(i==N-1 && j==N-1)
-            coarse[i/2 * NN + j/2] =  1/16*fine[(i-1)* N + (j-1)]+ 1/8*fine[i*N + (j-1)]+ 1/8*fine[(i-1)*N + j] + 1/4*fine[i*N + j];
-
+            coarse[i/2 * NN + j/2] =  0.0625*fine[(i-1)* N + (j-1)]+ 0.125*fine[i*N + (j-1)]+ 0.125*fine[(i-1)*N + j] + 0.25*fine[i*N + j];
+          //printf("%d-%d\t%e\n",i,j,coarse[i/2 * NN + j/2]);
       }
+//printf("--------------------------------\n");
+//printf("%f\n", 1/16);
+
+      //for(i = 0; i < N; i+=2)
+      //for(j = 0; j < N; j+=2)
+      //printf("%d-%d\t%e\n",i/2,j/2,coarse[i/2 * NN + j/2]);
 }
 
 /* This function interpolates the the NNxNN mesh stored in 'coarse[ ]' to NxN mesh stored in 'fine[ ]' 
@@ -149,21 +155,21 @@ void do_prolong(int NN, double *coarse, int N, double *fine)
       {
           fine[2*i * N + 2*j] = coarse [i*NN, j];
           if(i<NN && j<NN)
-            fine[2*(i+1)*N+ 2*(j+1)] += 1/4*coarse [(i+1)*NN+j+1];
+            fine[2*(i+1)*N+ 2*(j+1)] += 0.25*coarse [(i+1)*NN+j+1];
           if(i<NN)
-            fine[2*(i+1)*N + 2*j] += 1/2*coarse[(i+1)*NN+j] ;
+            fine[2*(i+1)*N + 2*j] += 0.5*coarse[(i+1)*NN+j] ;
           if(j>0 && i<NN)
-            fine[2*(i+1)*N + 2*(j-1)] += 1/4*coarse[(i+1)*NN+(j-1)];
+            fine[2*(i+1)*N + 2*(j-1)] += 0.25*coarse[(i+1)*NN+(j-1)];
           if(j<NN)
-            fine[2*i*N + 2*(j+1)] += 1/2*coarse[i*NN+j+1] ;
+            fine[2*i*N + 2*(j+1)] += 0.5*coarse[i*NN+j+1] ;
           if(i>0 && j>0)
-            fine[2*(i-1)*N + 2*(j-1)] = 1/4*coarse[(i-1)*NN+(j-1)]; 
+            fine[2*(i-1)*N + 2*(j-1)] = 0.25*coarse[(i-1)*NN+(j-1)]; 
           if(i>0)
-            fine[2*(i-1)*N + 2*j] = 1/2*coarse[(i-1)*NN+j];
+            fine[2*(i-1)*N + 2*j] = 0.5*coarse[(i-1)*NN+j];
           if(i>0 && j>0)
-            fine[2*(i-1)*N + 2*(j+1)] = 1/4*coarse[(i-1)*NN+(j+1)] ;
+            fine[2*(i-1)*N + 2*(j+1)] = 0.25*coarse[(i-1)*NN+(j+1)] ;
           if(i>0 && j>0)
-            fine[2*(i-1)*N + 2*(j-1)] = 1/2*coarse[(i-1)*NN+(j-1)];
+            fine[2*(i-1)*N + 2*(j-1)] = 0.5*coarse[(i-1)*NN+(j-1)];
       }
 }
 
@@ -230,6 +236,7 @@ int main(int argc, char **argv)
 {
   int i, j;
   int N = 256;
+  //int N = 8;
   int NN = N/2;
   int steps = 2000;
   double L = 1.0;
@@ -240,7 +247,7 @@ int main(int argc, char **argv)
   double *coarsetest = malloc(N * N * sizeof(double));
   for(i = 0; i < NN; i++)
     for(j = 0; j < NN; j++)
-        test[i*NN+j] = 1;
+        test[i*NN+j] = 1.0;
   /* allocate some storage for our fields */
   double *phi = malloc(N * N * sizeof(double));
   double *rho = malloc(N * N * sizeof(double));
@@ -278,7 +285,7 @@ int main(int argc, char **argv)
 
   /* open a file for outputting the residuum values, and then do 2000 Jacobi steps */
 
-  /*
+  
   FILE *fd = fopen("res_multigrid.txt", "w");
 
   fprintf(fd, "%d\n", steps);
@@ -297,12 +304,12 @@ int main(int argc, char **argv)
     }
 
   fclose(fd);
-  */
+  
 
-  do_restrict(N,coarsetest,NN,test);
-  for(i = 0; i < N; i++)
-    for(j = 0; j < N; j++)  
-      printf("%f\n", coarsetest[i*N+j]);
+  //do_restrict(N,coarsetest,NN,test);
+ // for(i = 0; i < N; i++)
+   // for(j = 0; j < N; j++)
+      // printf("%f\n", coarsetest[i*N+j]);
 
 }
 
