@@ -54,10 +54,18 @@ void initialize(particle * p, int nperdim, double boxsize, double temp, double e
 	   *    p[n].pos[1] = ........
 	   *    p[n].pos[2] = ........
 	   *
-	   *    p[n].vel[0] = .......
+	   *    p[n].vel[0] = .......DF
 	   *    .......
 	   */
-
+            
+           p[n].pos[0]=5*i+nperdim/boxsize;
+           p[n].pos[1]=5*j+nperdim/boxsize;
+           p[n].pos[2]=5*k+nperdim/boxsize;
+          
+           p[n].vel[0]=;
+           p[n].vel[1]=;
+           p[n].vel[2]=;
+          
           n++;
         }
 }
