@@ -67,9 +67,9 @@ void initialize(particle * p, int nperdim, double boxsize, double temp, double e
           p[n].pos[1]=5.0*j+boxsize/sigma;
           p[n].pos[2]=5.0*k+boxsize/sigma;
           
-          p[n].vel[0]=gaussian_rnd()*sqrt(temp/epsilon_in_Kelvin);
-          p[n].vel[1]=gaussian_rnd()*sqrt(temp/epsilon_in_Kelvin);
-          p[n].vel[2]=gaussian_rnd()*sqrt(temp/epsilon_in_Kelvin);
+          p[n].vel[0]=gaussian_rnd();
+          p[n].vel[1]=gaussian_rnd();
+          p[n].vel[2]=gaussian_rnd();
           
           n++;
         }
@@ -95,7 +95,7 @@ void kick(particle *p, int ntot, double dt)
 void drift(particle * p, int ntot, double boxsize, double dt)
 {
     int n,i;
-    double mod[ntot][3];
+    int modi[ntot][3],modf[ntot][3];
   /*
    *   FILL IN HERE
    *   
@@ -105,17 +105,18 @@ void drift(particle * p, int ntot, double boxsize, double dt)
   
   for(n=0;n<ntot;n++)
       for(i=0;i<3;i++)
-        mod[n][i]=p[n].pos[i]%(5*sigma);
+        modi[n][i]=p[n].pos[i]/(5*sigma);
   
   for(n=0;n<ntot;n++)
       for(i=0;i<3;i++)
       {
         p[n].pos[i]+=p[n].vel[i]*dt;
+        modf[n][i]=p[n].pos[i]/(5*sigma);
         
         if(p[n].pos[i]>mod[n][i])
-            p[n].pos[i]-=5*sigma;
+            p[n].pos[i]-=(5*sigma)*modf[n][i];
         if(p[n].pos[i]<mod[n][i])
-            p[n].pos[i]+=5*sigma;
+            p[n].pos[i]+=(5*sigma)*modf[n][i];
       }
 }
 
@@ -190,6 +191,7 @@ void calc_forces(particle * p, int ntot, double boxsize, double rcut)
  */
 void calc_energies(particle * p, int ntot, double epsilon_in_Kelvin, double *ekin, double *epot, double *temp)
 {
+    int n,i;
   /*
    *   FILL IN HERE
    *   
@@ -197,6 +199,13 @@ void calc_energies(particle * p, int ntot, double epsilon_in_Kelvin, double *eki
    *     *epot = ....
    *     *temp = ....
    */
+  for(n=0;n<ntot;n++)
+  {
+      *ekin+=0.5*(pow(p[n].vel[0],2)+pow(p[n].vel[1],2)+pow(p[n].vel[2],2));
+      *epot+=p[n].pot;
+      *temp=pow(p[n].vel[0],2)+pow(p[n].vel[1],2)+pow(p[n].vel[2],2);
+  }
+  *temp *= 2/(3*kb) * 1/ntot * 0.5;
 }
 
 
@@ -205,12 +214,16 @@ void calc_energies(particle * p, int ntot, double epsilon_in_Kelvin, double *eki
  */
 void rescale_velocities(particle * p, int ntot, double fac)
 {
+    int n,i;
   /*
    *   FILL IN HERE
    *   
    *      p[i].vel[k] *= ...
    *   
    */
+  for(n=0;n<ntot;n++)
+      for(i=0;i<3;i++)
+          p[n].vel[i]*=fac;
 }
 
 
@@ -269,7 +282,7 @@ int main(int argc, char **argv)
            *   FILL IN HERE
            *   double fac = ....
            */      
-
+          double fac=
      	  rescale_velocities(p, N, fac);
         }
 
