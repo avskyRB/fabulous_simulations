@@ -6,6 +6,11 @@
 #include <math.h>
 #include <time.h>
 
+#define sigma 3.4*pow(10,-10)
+#define kb 1.38*pow(10,-23)
+#define eps 1.65*pow(10,-21)
+
+
 
 /* this is our data type for storing the information for the particles
  */
@@ -54,17 +59,17 @@ void initialize(particle * p, int nperdim, double boxsize, double temp, double e
 	   *    p[n].pos[1] = ........
 	   *    p[n].pos[2] = ........
 	   *
-	   *    p[n].vel[0] = .......DF
+	   *    p[n].vel[0] = .......
 	   *    .......
 	   */
-            
-           p[n].pos[0]=5*i+nperdim/boxsize;
-           p[n].pos[1]=5*j+nperdim/boxsize;
-           p[n].pos[2]=5*k+nperdim/boxsize;
+
+          p[n].pos[0]=5.0*i+boxsize/sigma;
+          p[n].pos[1]=5.0*j+boxsize/sigma;
+          p[n].pos[2]=5.0*k+boxsize/sigma;
           
-           p[n].vel[0]=;
-           p[n].vel[1]=;
-           p[n].vel[2]=;
+          p[n].vel[0]=gaussian_rnd()*sqrt(temp/epsilon_in_Kelvin);
+          p[n].vel[1]=gaussian_rnd()*sqrt(temp/epsilon_in_Kelvin);
+          p[n].vel[2]=gaussian_rnd()*sqrt(temp/epsilon_in_Kelvin);
           
           n++;
         }
@@ -89,12 +94,29 @@ void kick(particle *p, int ntot, double dt)
  */
 void drift(particle * p, int ntot, double boxsize, double dt)
 {
+    int n,i;
+    double mod[ntot][3];
   /*
    *   FILL IN HERE
    *   
    *    p[n].pos[0] += ........
    *    ........
    */
+  
+  for(n=0;n<ntot;n++)
+      for(i=0;i<3;i++)
+        mod[n][i]=p[n].pos[i]%(5*sigma);
+  
+  for(n=0;n<ntot;n++)
+      for(i=0;i<3;i++)
+      {
+        p[n].pos[i]+=p[n].vel[i]*dt;
+        
+        if(p[n].pos[i]>mod[n][i])
+            p[n].pos[i]-=5*sigma;
+        if(p[n].pos[i]<mod[n][i])
+            p[n].pos[i]+=5*sigma;
+      }
 }
 
 
@@ -147,6 +169,18 @@ void calc_forces(particle * p, int ntot, double boxsize, double rcut)
          *    p[j].acc[k] += ...
 	 *    ........
 	 */
+        
+            if(sqrt(r2)>rcut)
+                p[i].pot=p[j].pot=0;
+        
+            p[i].pot+=4*(pow(1/sqrt(r2),12)-pow(1/sqrt(r2),6));
+            p[j].pot+=4*(pow(1/sqrt(r2),12)-pow(1/sqrt(r2),6));
+        
+            for(k=0;k<3;k++)
+            {
+                p[i].acc[k]+=48/pow(r2,13/2)-24/pow(r2,7/2);//if you consider two particles one gets an acceleration,
+                p[j].acc[k]-=48/pow(r2,13/2)-24/pow(r2,7/2);//the other gets the opposite
+            }
       }
 }
 
