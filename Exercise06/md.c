@@ -103,20 +103,25 @@ void drift(particle * p, int ntot, double boxsize, double dt)
    *    ........
    */
   
-  for(n=0;n<ntot;n++)
+ /* for(n=0;n<ntot;n++)
       for(i=0;i<3;i++)
-        modi[n][i]=p[n].pos[i]/(5*sigma);
+        modi[n][i]=p[n].pos[i]/(5*sigma);*/
   
   for(n=0;n<ntot;n++)
       for(i=0;i<3;i++)
       {
         p[n].pos[i]+=p[n].vel[i]*dt;
-        modf[n][i]=p[n].pos[i]/(5*sigma);
+        //modf[n][i]=p[n].pos[i]/(5*sigma);
         
-        if(p[n].pos[i]>modi[n][i])
+        /*if(p[n].pos[i]>modi[n][i])
             p[n].pos[i]-=(5*sigma)*modf[n][i];
         if(p[n].pos[i]<modi[n][i])
-            p[n].pos[i]+=(5*sigma)*modf[n][i];
+            p[n].pos[i]+=(5*sigma)*modf[n][i];*/
+        
+        if(p[n].pos[i]>boxsize/sigma)
+            p[n].pos[i]=fabs(p[n].pos[i]-boxsize/sigma);
+        if(p[n].pos[i]<boxsize/sigma)
+            p[n].pos[i]=boxsize/sigma-p[n].pos[i];
       }
 }
 
