@@ -113,9 +113,9 @@ void drift(particle * p, int ntot, double boxsize, double dt)
         p[n].pos[i]+=p[n].vel[i]*dt;
         modf[n][i]=p[n].pos[i]/(5*sigma);
         
-        if(p[n].pos[i]>mod[n][i])
+        if(p[n].pos[i]>modi[n][i])
             p[n].pos[i]-=(5*sigma)*modf[n][i];
-        if(p[n].pos[i]<mod[n][i])
+        if(p[n].pos[i]<modi[n][i])
             p[n].pos[i]+=(5*sigma)*modf[n][i];
       }
 }
@@ -282,7 +282,7 @@ int main(int argc, char **argv)
            *   FILL IN HERE
            *   double fac = ....
            */      
-          double fac=
+          double fac=sqrt(target_temp_in_Kelvin/temp);
      	  rescale_velocities(p, N, fac);
         }
 
