@@ -186,6 +186,8 @@ void calc_forces(particle * p, int ntot, double boxsize, double rcut)
             {
                 p[i].acc[k]+=48/pow(r2,6.5)-24/pow(r2,3.5);//if you consider two particles one gets an acceleration,
                 p[j].acc[k]-=48/pow(r2,6.5)-24/pow(r2,3.5);//the other gets the opposite
+
+                /* APPARENTLY INTEGERS WERE NOT THE THING TO USE HERE*/
             }
       }
 }
