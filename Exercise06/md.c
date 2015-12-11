@@ -179,13 +179,13 @@ void calc_forces(particle * p, int ntot, double boxsize, double rcut)
             if(sqrt(r2)>rcut)
                 p[i].pot=p[j].pot=0;
         
-            p[i].pot+=4*(pow(1/sqrt(r2),12)-pow(1/sqrt(r2),6));
-            p[j].pot+=4*(pow(1/sqrt(r2),12)-pow(1/sqrt(r2),6));
+            p[i].pot+=4*(pow(1/sqrt(r2),12.0)-pow(1/sqrt(r2),6.0));
+            p[j].pot+=4*(pow(1/sqrt(r2),12.0)-pow(1/sqrt(r2),6.0));
         
             for(k=0;k<3;k++)
             {
-                p[i].acc[k]+=48/pow(r2,13/2)-24/pow(r2,7/2);//if you consider two particles one gets an acceleration,
-                p[j].acc[k]-=48/pow(r2,13/2)-24/pow(r2,7/2);//the other gets the opposite
+                p[i].acc[k]+=48/pow(r2,6.5)-24/pow(r2,3.5);//if you consider two particles one gets an acceleration,
+                p[j].acc[k]-=48/pow(r2,6.5)-24/pow(r2,3.5);//the other gets the opposite
             }
       }
 }
