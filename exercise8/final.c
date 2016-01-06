@@ -78,22 +78,22 @@ double * riemann_roe_isothermal(double *fluxl, double *fluxr, double rhol, doubl
     return flux;
 }
 
-void sweep(double rho[N][M][2], double u[N][M][2], double v[N][M][2], double tstep, double xspacing, double cs, int N, int M, int offsetleft[2], int offsetright[2])
+void sweep(	double state[3][N][M][2], double rho[N][M][2], double u[N][M][2], double v[N][M][2], double tstep, double xspacing, double cs, int N, int M, int offsetleft[2], int offsetright[2])
 // ONE TIMESTEP
 {
-	double state[3][N][M][2];// vector de tres en cada celda por cada timestep,solo 1 timestep
+// vector de tres en cada celda por cada timestep,solo 1 timestep
 	// initial state??
+	
 	for(int i=0;i<N;i++)
 	{
 		for (int j=0;j<M;j++)
 		{
-
-			state[0][i][j][0] = rho[i][j][0];
-			state[1][i][j][0] = 0;
-			state[2][i][j][0] = 0;
-		}
-	}	
 	
+			rho[i][j][0] = state[0][i][j][0];
+			u[i][j][0] = state[1][i][j][0]/rho[i][j][0];
+			v[i][j][0] = state[2][i][j][0]/rho[i][j][0];
+		}
+	}
 	for(int i=0;i<N;i++)
 	{
 		for (int j=0;j<M;j++)
@@ -148,11 +148,21 @@ int main()
 	double rho[N][M][2];
 	double u[N][M][2];
 	double v[N][M][2];
+	double state[3][N][M][2];
 	int offsetrightx[2] = {1,0};
 	int offsetleftx[2] = {-1,0};
 	int offsetrighty[2] = {0,1};
 	int offsetlefty[2] = {0,-1};
 	// u and v are fields !!!!????? el maximo de ellos?
+
+/*	for(i=1;i<r;i++)
+	{ 
+    for(j=1;j<c;j++)
+    	{ 
+        	if(a[i][j]>t)
+            t=a[i][j];
+    }
+} */
 	//if(xspacing>yspacing && u>v) tstep = ccfl * yspacing / (cs + u );
 	//elif(xspacing<yspacing && u>v) tstep = ccfl * xspacing / (cs + u );
 	//elif(xspacing>yspacing && v>u) tstep = ccfl * yspacing / (cs + v );
@@ -169,31 +179,48 @@ int main()
 				rho[i][j][0] = 4.0;
 			else
 				rho[i][j][0]=1.0;
+			state[0][i][j][0] = rho[i][j][0];
+			state[1][i][j][0] = 0;
+			state[2][i][j][0] = 0;
 		}
 	}
+
 
 	for(double i=0.0; i<=Tmax ; i=i+tstep)
 	{	
 		
-		sweep(rho,u,v,tstep,xspacing,cs,N,M,offsetrightx,offsetleftx);
-		sweep(rho,u,v,tstep,yspacing,cs,N,M,offsetrighty,offsetlefty);
+		sweep(state,rho,u,v,tstep,xspacing,cs,N,M,offsetrightx,offsetleftx);
+		for(int k=0;k<3;k++)
+		{
 		for(int i=0;i<N;i++)
 		{
 			for (int j=0;j<M;j++)
 			{
-				rho[i][j][0] = rho[i][j][1];
+				state[k][i][j][0] = state[k][i][j][1];
 
 			}
-	}
-		
+		}
+		}
+		sweep(state,rho,u,v,tstep,yspacing,cs,N,M,offsetrighty,offsetlefty);
+				for(int k=0;k<3;k++)
+		{
+		for(int i=0;i<N;i++)
+		{
+			for (int j=0;j<M;j++)
+			{
+				state[k][i][j][0] = state[k][i][j][1];
 
+			}
+		}
+		}
+	
 	}
 
 	for(int i = 0; i < N; i++) 
 	{
 		for(int j = 0; j < M; j++) 
 		{
-        printf("%f ", rho[i][j][1]);
+        printf("%f ", v[i][j][1]);
     	}	
     	printf("\n\r ");
     }
